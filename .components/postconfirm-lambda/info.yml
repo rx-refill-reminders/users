@@ -1,0 +1,9 @@
+path: postconfirm-lambda
+component: postconfirm-lambda
+type: lambda
+
+language: go
+
+src-path: src
+build-path: src/dist
+infra-path: infra
