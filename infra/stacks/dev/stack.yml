@@ -1,0 +1,3 @@
+aws-account-id: 339284817422
+assume-role-arn: arn:aws:iam::339284817422:role/terraform
+states-bucket: terraform-states-339284817422-us-east-1-an
