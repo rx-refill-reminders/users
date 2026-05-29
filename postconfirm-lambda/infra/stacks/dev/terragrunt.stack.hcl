@@ -3,7 +3,7 @@ locals {
 }
 
 unit "lambda_function" {
-  source = "${get_repo_root()}/api/infra/units/lambda-function"
+  source = "${get_repo_root()}/postconfirm-lambda/infra/units/lambda-function"
   path   = "lambda-function"
 
   values = {
