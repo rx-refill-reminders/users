@@ -1,5 +1,6 @@
 locals {
-  domain = "dev.rx-refill-reminders.com"
+  hosted_zone_id = "Z08427401W2SCGIP77L8A"
+  domain         = "dev.rx-refill-reminders.com"
 
   cognito_resource_server_scopes = [
     {
@@ -34,6 +35,7 @@ unit "cognito_user_pool" {
     enable_google_signin  = false
 
     domain = {
+      zone_id  = local.hosted_zone_id
       hostname = "auth.${local.domain}"
     }
   }
