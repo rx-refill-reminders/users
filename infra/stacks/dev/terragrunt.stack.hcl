@@ -24,10 +24,10 @@ unit "cognito_user_pool" {
 
     enable_web_client = true
     web_callback_urls = [
-      "https://app.rx-refill-reminders.com/callback"
+      "https://app.dev.rx-refill-reminders.com/callback"
     ]
     web_logout_urls = [
-      "https://app.rx-refill-reminders.com/logout"
+      "https://app.dev.rx-refill-reminders.com/logout"
     ]
 
     ios_callback_urls = [
