@@ -22,7 +22,7 @@ unit "cognito_user_pool" {
     resource_server_name       = "Rx Refill Reminders API"
     resource_server_scopes     = local.cognito_resource_server_scopes
 
-    enable_web_client     = true
+    enable_web_client = true
     web_callback_urls = [
       "https://app.rx-refill-reminders.com/callback"
     ]
