@@ -26,7 +26,7 @@ unit "cognito_user_pool" {
 
     domain = {
       mode = "cognito-hosted"
-      cognito_hosted = {
+      user_hosted = {
         hosted_zone_id  = local.hosted_zone_id
         domain          = "auth.${local.domain}"
         certificate_arn = "arn:aws:acm:us-east-1:339284817422:certificate/3ef26155-8494-4789-bae2-52d8299aa384"
