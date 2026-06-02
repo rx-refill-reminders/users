@@ -15,20 +15,20 @@ unit "cognito_user_pool" {
   path   = "cognito-user-pool"
 
   values = {
-    pool_name                  = "rx-refill-reminders"
+    pool_name = "rx-refill-reminders"
 
     resource_server_identifier = "https://api.rx-refill-reminders.com"
     resource_server_name       = "Rx Refill Reminders API"
     resource_server_scopes     = local.cognito_resource_server_scopes
 
-    enable_apple_signin   = false
-    enable_google_signin  = false
+    enable_apple_signin  = false
+    enable_google_signin = false
 
     domain = {
       mode = "cognito-hosted"
       cognito_hosted = {
         hosted_zone_id  = local.hosted_zone_id
-        domain           = "auth.${local.domain}"
+        domain          = "auth.${local.domain}"
         certificate_arn = "arn:aws:acm:us-east-1:339284817422:certificate/3ef26155-8494-4789-bae2-52d8299aa384"
       }
     }
