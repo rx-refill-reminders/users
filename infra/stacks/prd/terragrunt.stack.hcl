@@ -37,7 +37,7 @@ unit "cognito_user_pool" {
       m2m = {
         automations = {}
       }
-      app = {
+      apps = {
         web = {
           callback_urls = ["https://app.${local.domain}/callback"]
           logout_urls   = ["https://app.${local.domain}/logout"]
