@@ -25,7 +25,7 @@ unit "cognito_user_pool" {
     enable_google_signin = false
 
     domain = {
-      mode = "cognito-hosted"
+      mode = "user-hosted"
       user_hosted = {
         hosted_zone_id  = local.hosted_zone_id
         domain          = "auth.${local.domain}"
