@@ -39,8 +39,8 @@ unit "cognito_user_pool" {
       }
       apps = {
         web = {
-          callback_urls = ["https://app.${local.domain}/callback"]
-          logout_urls   = ["https://app.${local.domain}/logout"]
+          callback_urls = ["https://${local.domain}/callback"]
+          logout_urls   = ["https://${local.domain}/logout"]
         }
         ios = {
           callback_urls = ["rxrefillreminders://callback"]
