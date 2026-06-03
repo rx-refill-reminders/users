@@ -24,6 +24,10 @@ unit "cognito_user_pool" {
     enable_apple_signin  = false
     enable_google_signin = false
 
+    lambda_trigger_arns = {
+      post_confirmation = "arn:aws:lambda:us-east-1:104875668206:function:cognito-postconfirm-handler"
+    }
+
     domain = {
       mode = "user-hosted"
       user_hosted = {
