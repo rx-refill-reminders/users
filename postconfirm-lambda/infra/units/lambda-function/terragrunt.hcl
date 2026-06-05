@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "git::github.com/rx-refill-reminders/terraform-modules//modules/lambda-function?ref=lambda-function%2Fv0&depth=0"
+  source = "git::github.com/rx-refill-reminders/terraform-modules//modules/lambda-function?ref=default-env-vars&depth=0"
 }
 
 inputs = {
@@ -18,7 +18,6 @@ inputs = {
   role_arn       = values.role_arn
 
   env_vars = {
-    AWS_REGION  = values.aws_region
     USERS_TABLE = values.users_table_name
   }
 }
