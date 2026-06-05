@@ -40,6 +40,7 @@ func NewHandler(cfg envconfig.Config) Handler {
 		Config: cfg,
 
 		usersdb: usersdb.NewClient(usersdb.Config{
+			Region:     cfg.AWSRegion,
 			UsersTable: cfg.UsersTable,
 		}),
 	}
