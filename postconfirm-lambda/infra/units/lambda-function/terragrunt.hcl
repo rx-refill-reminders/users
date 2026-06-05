@@ -16,4 +16,8 @@ inputs = {
 
   code_bucket_id = values.code_bucket_id
   role_arn       = values.role_arn
+
+  env_vars = {
+    USERS_TABLE = values.users_table_name
+  }
 }
