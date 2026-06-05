@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "git::github.com/rx-refill-reminders/terraform-modules//modules/cognito-user-pool?ref=cognito-lambda-function&depth=0"
+  source = "git::github.com/rx-refill-reminders/terraform-modules//modules/cognito-user-pool?ref=cognito-user-pool%2Fv1&depth=0"
 }
 
 inputs = values
