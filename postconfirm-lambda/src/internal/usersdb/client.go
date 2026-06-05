@@ -11,6 +11,7 @@ import (
 )
 
 type Config struct {
+	Region     string
 	UsersTable string
 }
 
@@ -31,7 +32,9 @@ func NewClient(cfg Config) Client {
 	return &client{
 		Config: cfg,
 
-		dynamo: dynamodb.New(dynamodb.Options{}),
+		dynamo: dynamodb.New(dynamodb.Options{
+			Region: cfg.Region,
+		}),
 	}
 }
 
