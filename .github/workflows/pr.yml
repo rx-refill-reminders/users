@@ -18,6 +18,73 @@ concurrency:
 
 jobs:
 
-  pr:
-    uses: rx-refill-reminders/pipeline/.github/workflows/pr.yml@pr/v0
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-component-types: ${{ steps.components-changed.outputs.changed-component-types }}
+      changed-components-by-type: ${{ steps.components-changed.outputs.changed-components-by-type }}
+    steps:
+      -
+        uses: actions/checkout@v6
+      -
+        name: Detect changed components
+        id: components-changed
+        uses: slingshot-pipelines/action-components-changed@v1
+
+  check-components:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"components"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-components.yml@check-components/v0
     secrets: inherit
+
+  check-github-actions:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"github-actions"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-github-actions.yml@check-github-actions/v0
+    strategy:
+      matrix:
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).github-actions }}
+    with:
+      COMPONENT: ${{ matrix.COMPONENT }}
+    secrets: inherit
+
+  check-lambdas:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"lambda"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-lambda.yml@check-lambda/v0
+    strategy:
+      matrix:
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda }}
+    with:
+      COMPONENT: ${{ matrix.COMPONENT }}
+    secrets: inherit
+
+  check-infra:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"terragrunt-infra"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-terragrunt-infra.yml@check-terragrunt-infra/v0
+    strategy:
+      matrix:
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra }}
+    with:
+      COMPONENT: ${{ matrix.COMPONENT }}
+      TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
+      TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
+    secrets: inherit
+
+  pr-ready:
+    runs-on: ubuntu-latest
+    needs:
+      - detect-changes
+      - check-components
+      - check-lambdas
+      - check-infra
+    steps:
+      -
+        uses: slingshot-pipelines/action-pr-ready@v0
+        with:
+          NEEDS: ${{ toJSON(needs) }}
