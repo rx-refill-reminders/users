@@ -20,6 +20,41 @@ concurrency:
 
 jobs:
 
-  deploy:
-    uses: rx-refill-reminders/pipeline/.github/workflows/deploy.yml@deploy/v0
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed-component-types: ${{ steps.components-changed.outputs.changed-component-types }}
+      changed-components-by-type: ${{ steps.components-changed.outputs.changed-components-by-type }}
+    steps:
+      -
+        uses: actions/checkout@v6
+      -
+        name: Detect changed components
+        id: components-changed
+        uses: slingshot-pipelines/action-components-changed@v1
+
+  deploy-lambdas:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"lambda"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/deploy-lambda.yml@deploy-lambda/v0
+    strategy:
+      matrix:
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda }}
+    with:
+      COMPONENT: ${{ matrix.COMPONENT }}
+    secrets: inherit
+
+  deploy-infra:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"terragrunt-infra"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/deploy-terragrunt-infra.yml@deploy-terragrunt-infra/v0
+    strategy:
+      matrix:
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra }}
+    with:
+      COMPONENT: ${{ matrix.COMPONENT }}
+      TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
+      TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
     secrets: inherit
