@@ -29,7 +29,7 @@ jobs:
       -
         name: Detect changed components
         id: components-changed
-        uses: slingshot-pipelines/action-components-changed@v0
+        uses: slingshot-pipelines/action-components-changed@debug-empty-components
 
   check-components:
     needs:
