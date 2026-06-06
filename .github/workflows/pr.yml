@@ -29,7 +29,7 @@ jobs:
       -
         name: Detect changed components
         id: components-changed
-        uses: slingshot-pipelines/action-components-changed@debug-empty-components
+        uses: slingshot-pipelines/action-components-changed@v1
 
   check-components:
     needs:
@@ -45,7 +45,7 @@ jobs:
     uses: slingshot-pipelines/workflows/.github/workflows/check-github-actions.yml@check-github-actions/v0
     strategy:
       matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type)['github-actions'].*.component }}
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).github-actions }}
     with:
       COMPONENT: ${{ matrix.COMPONENT }}
     secrets: inherit
@@ -57,7 +57,7 @@ jobs:
     uses: slingshot-pipelines/workflows/.github/workflows/check-lambda.yml@check-lambda/v0
     strategy:
       matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda.*.component }}
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda }}
     with:
       COMPONENT: ${{ matrix.COMPONENT }}
     secrets: inherit
@@ -69,7 +69,7 @@ jobs:
     uses: slingshot-pipelines/workflows/.github/workflows/check-terragrunt-infra.yml@check-terragrunt-infra/v0
     strategy:
       matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra.*.component }}
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra }}
     with:
       COMPONENT: ${{ matrix.COMPONENT }}
       TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
