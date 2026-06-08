@@ -35,14 +35,14 @@ jobs:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"components"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-components.yml@no-rx-refill-reminders
+    uses: slingshot-pipelines/workflows/.github/workflows/check-components.yml@check-components/v0
     secrets: inherit
 
   check-github-workflows:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"github-workflows"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-github-workflows.yml@no-rx-refill-reminders
+    uses: slingshot-pipelines/workflows/.github/workflows/check-github-workflows.yml@check-github-workflows/v0
     strategy:
       matrix:
         COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).github-workflows }}
@@ -54,7 +54,7 @@ jobs:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"lambda"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-lambda.yml@no-rx-refill-reminders
+    uses: slingshot-pipelines/workflows/.github/workflows/check-lambda.yml@check-lambda/v0
     strategy:
       matrix:
         COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda }}
@@ -68,7 +68,7 @@ jobs:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"terragrunt-infra"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-terragrunt-infra.yml@no-rx-refill-reminders
+    uses: slingshot-pipelines/workflows/.github/workflows/check-terragrunt-infra.yml@check-terragrunt-infra/v0
     strategy:
       matrix:
         COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra }}
