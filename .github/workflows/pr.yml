@@ -38,14 +38,14 @@ jobs:
     uses: slingshot-pipelines/workflows/.github/workflows/check-components.yml@check-components/v0
     secrets: inherit
 
-  check-github-actions:
+  check-github-workflows:
     needs:
       - detect-changes
-    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"github-actions"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-github-actions.yml@check-github-actions/v0
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"github-workflows"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-github-workflows.yml@check-github-workflows/v0
     strategy:
       matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).github-actions }}
+        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).github-workflows }}
     with:
       COMPONENT: ${{ matrix.COMPONENT }}
     secrets: inherit
@@ -60,6 +60,8 @@ jobs:
         COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda }}
     with:
       COMPONENT: ${{ matrix.COMPONENT }}
+      TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
+      TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
     secrets: inherit
 
   check-infra:
@@ -78,9 +80,11 @@ jobs:
 
   pr-ready:
     runs-on: ubuntu-latest
+    if: ${{ always() }}
     needs:
       - detect-changes
       - check-components
+      - check-github-workflows
       - check-lambdas
       - check-infra
     steps:
