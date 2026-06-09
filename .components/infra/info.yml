@@ -1,3 +1,6 @@
-path: infra
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/terragrunt-infra.schema.json
+
 component: infra
 type: terragrunt-infra
+
+path: infra
