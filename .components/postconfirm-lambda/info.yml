@@ -1,9 +1,13 @@
-path: postconfirm-lambda
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/lambda.schema.json
+
 component: postconfirm-lambda
 type: lambda
 
-language: go
+path: postconfirm-lambda
 
-src-path: src
-build-path: src/dist
-infra-path: infra
+source-language: go
+
+subpaths:
+  src: src
+  build: src/dist
+  infra: infra
