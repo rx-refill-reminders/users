@@ -11,12 +11,3 @@ subpaths:
   src: src
   build: src/dist
   infra: infra
-
-deployments:
-  environments:
-    dev: {}
-    prd: {}
-
-  sequence:
-    - environment: dev
-    - environment: prd

@@ -1,3 +1,12 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/project/v1/project.schema.json
 
 project: users
+
+deployments:
+  environments:
+    dev: {}
+    prd: {}
+
+  sequence:
+    - environment: dev
+    - environment: prd
