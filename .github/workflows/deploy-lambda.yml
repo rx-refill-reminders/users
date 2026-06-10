@@ -50,7 +50,7 @@ jobs:
       COMPONENT: ${{ steps.deployment-info.outputs.COMPONENT }}
       ENVIRONMENT: ${{ steps.deployment-info.outputs.ENVIRONMENT }}
       TAG: ${{ steps.deployment-info.outputs.TAG }}
-      HAS_NEXT: ${{ steps.parse-deployment-sequence.outputs.DONE != 'true' }}
+      SEQUENCE_DONE: ${{ steps.parse-deployment-sequence.outputs.DONE }}
       NEXT_ENVIRONMENT: ${{ steps.parse-deployment-sequence.outputs.NEXT_ENVIRONMENT }}
     steps:
       -
@@ -84,6 +84,19 @@ jobs:
           COMPONENT: ${{ steps.deployment-info.outputs.COMPONENT }}
           PREVIOUS_ENVIRONMENT: ${{ steps.deployment-info.outputs.ENVIRONMENT }}
 
+  release:
+    needs:
+      - parse-deployment-info
+    runs-on: ubuntu-latest
+    if: ${{ needs.parse-deployment-info.outputs.SEQUENCE_DONE == 'true' }}
+    steps:
+      -
+        uses: actions/checkout@v6
+      -
+        uses: slingshot-pipelines/action-promote-prerelease@v0
+        with:
+          TAG: ${{ needs.parse-deployment-info.outputs.TAG }}
+
   deploy:
     needs:
       - parse-deployment-info
@@ -100,7 +113,7 @@ jobs:
     needs:
       - parse-deployment-info
       - deploy
-    if: ${{ needs.parse-deployment-info.outputs.HAS_NEXT == 'true' && !(github.event_name == 'wokflow_dispatch' && inputs.DISPATCH_NEXT == false) }}
+    if: ${{ needs.parse-deployment-info.outputs.SEQUENCE_DONE == 'false' && !(github.event_name == 'wokflow_dispatch' && inputs.DISPATCH_NEXT == false) }}
     runs-on: ubuntu-latest
     steps:
       -
