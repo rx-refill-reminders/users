@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/lambda.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/component.schema.json
 
 component: postconfirm-lambda
 type: lambda
@@ -11,3 +11,12 @@ subpaths:
   src: src
   build: src/dist
   infra: infra
+
+deployments:
+  environments:
+    dev: {}
+    prd: {}
+
+  sequence:
+    - environment: dev
+    - environment: prd

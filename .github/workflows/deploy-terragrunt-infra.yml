@@ -1,0 +1,116 @@
+name: deploy (terragrunt-infra)
+
+run-name: Deploy ${{ github.event.client_payload.tag || inputs.TAG }} to ${{ github.event.client_payload.environment || inputs.ENVIRONMENT }}
+
+on:
+
+  repository_dispatch:
+    types:
+      - deploy-terragrunt-infra-dev
+      - deploy-terragrunt-infra-prd
+  
+  workflow_dispatch:
+    inputs:
+      COMPONENT:
+        description: component
+        required: true
+        type: string
+      ENVIRONMENT:
+        description: environment
+        required: true
+        type: string
+      TAG:
+        description: tag
+        required: true
+        type: string
+      DISPATCH_NEXT:
+        description: dispatch next on success?
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+
+  parse-deployment-info:
+    runs-on: ubuntu-latest
+    outputs:
+      COMPONENT: ${{ steps.deployment-info.outputs.COMPONENT }}
+      ENVIRONMENT: ${{ steps.deployment-info.outputs.ENVIRONMENT }}
+      TAG: ${{ steps.deployment-info.outputs.TAG }}
+      HAS_NEXT: ${{ steps.parse-deployment-sequence.outputs.DONE != 'true' }}
+      NEXT_ENVIRONMENT: ${{ steps.parse-deployment-sequence.outputs.NEXT_ENVIRONMENT }}
+    steps:
+      -
+        uses: actions/checkout@v6
+      -
+        name: Parse repository_dispatch payload
+        id: parse-dispatch-event
+        if: github.event_name == 'repository_dispatch'
+        uses: slingshot-pipelines/action-deployment-sequence/parse-dispatch-event@v0
+        with:
+          CLIENT_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+      -
+        name: Consolidate deployment info
+        id: deployment-info
+        env:
+          COMPONENT: ${{ steps.parse-dispatch-event.outputs.COMPONENT || inputs.COMPONENT }}
+          ENVIRONMENT: ${{ steps.parse-dispatch-event.outputs.ENVIRONMENT || inputs.ENVIRONMENT }}
+          TAG: ${{ steps.parse-dispatch-event.outputs.TAG || inputs.TAG }}
+        run: |
+          {
+            echo "COMPONENT=$COMPONENT"
+            echo "ENVIRONMENT=$ENVIRONMENT"
+            echo "TAG=$TAG"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      -
+        name: Parse deployment sequence
+        id: parse-deployment-sequence
+        uses: slingshot-pipelines/action-deployment-sequence/parse-sequence@v0
+        with:
+          COMPONENT: ${{ steps.deployment-info.outputs.COMPONENT }}
+          PREVIOUS_ENVIRONMENT: ${{ steps.deployment-info.outputs.ENVIRONMENT }}
+
+  deploy:
+    needs:
+      - parse-deployment-info
+    uses: slingshot-pipelines/workflows/.github/workflows/deploy-terragrunt-infra.yml@deploy-terragrunt-infra/v1
+    with:
+      COMPONENT: ${{ needs.parse-deployment-info.outputs.COMPONENT }}
+      ENVIRONMENT: ${{ needs.parse-deployment-info.outputs.ENVIRONMENT }}
+      TAG: ${{ needs.parse-deployment-info.outputs.TAG }}
+      TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
+      TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
+    secrets: inherit
+
+  dispatch-next:
+    needs:
+      - parse-deployment-info
+      - deploy
+    if: ${{ needs.parse-deployment-info.outputs.HAS_NEXT == 'true' && !(github.event_name == 'wokflow_dispatch' && inputs.DISPATCH_NEXT == false) }}
+    runs-on: ubuntu-latest
+    steps:
+      -
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.parse-deployment-info.outputs.TAG }}
+      -
+        name: Dispatch next deployment in the sequence
+        uses: slingshot-pipelines/action-deployment-sequence/dispatch-next@v0
+        with:
+          COMPONENT: ${{ needs.parse-deployment-info.outputs.COMPONENT }}
+          TAG: ${{ needs.parse-deployment-info.outputs.TAG }}
+          NEXT_ENVIRONMENT: ${{ needs.parse-deployment-info.outputs.NEXT_ENVIRONMENT }}
