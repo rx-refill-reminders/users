@@ -5,9 +5,9 @@ import "time"
 type User struct {
 	ID string `json:"id" dynamodbav:"id"`
 
-	UserServerDrivenData
-
 	UserInfo
+
+	UserMetadata
 }
 
 type UserInfo struct {
@@ -17,7 +17,7 @@ type UserInfo struct {
 	LastName  string `json:"lastName" dynamodbav:"lastName"`
 }
 
-type UserServerDrivenData struct {
+type UserMetadata struct {
 	CreatedAt time.Time `json:"createdAt" dynamodbav:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt" dynamodbav:"updatedAt"`
 }

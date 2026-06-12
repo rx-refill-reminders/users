@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/envconfig"
+	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/config"
 	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/model"
 	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/usersdb"
 )
@@ -21,26 +21,28 @@ type Handler interface {
 }
 
 type handler struct {
-	envconfig.Config
+	config.Config
 
 	usersdb usersdb.Client
 }
 
-func NewHandlerFromEnv() (Handler, error) {
-	cfg, err := envconfig.Load()
+func NewHandlerFromEnv(ctx context.Context) (Handler, error) {
+	cfg, err := config.Load(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing environment: %w", err)
+		return nil, err
 	}
 
 	return NewHandler(*cfg), nil
 }
 
-func NewHandler(cfg envconfig.Config) Handler {
+func NewHandler(
+	cfg config.Config,
+) Handler {
 	h := &handler{
 		Config: cfg,
 
 		usersdb: usersdb.NewClient(usersdb.Config{
-			Region:     cfg.AWSRegion,
+			AWSConfig:  cfg.AWSConfig,
 			UsersTable: cfg.UsersTable,
 		}),
 	}
@@ -66,15 +68,15 @@ func (h *handler) Handle(
 	user := model.User{
 		ID: sub,
 
+		UserMetadata: model.UserMetadata{
+			CreatedAt: now,
+			UpdatedAt: now,
+		},
+
 		UserInfo: model.UserInfo{
 			Email:     attrs["email"],
 			FirstName: attrs["given_name"],
 			LastName:  attrs["family_name"],
-		},
-
-		UserServerDrivenData: model.UserServerDrivenData{
-			CreatedAt: now,
-			UpdatedAt: now,
 		},
 	}
 

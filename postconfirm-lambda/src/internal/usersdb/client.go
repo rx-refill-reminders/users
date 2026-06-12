@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -11,7 +12,7 @@ import (
 )
 
 type Config struct {
-	Region     string
+	AWSConfig  aws.Config
 	UsersTable string
 }
 
@@ -32,9 +33,7 @@ func NewClient(cfg Config) Client {
 	return &client{
 		Config: cfg,
 
-		dynamo: dynamodb.New(dynamodb.Options{
-			Region: cfg.Region,
-		}),
+		dynamo: dynamodb.NewFromConfig(cfg.AWSConfig),
 	}
 }
 

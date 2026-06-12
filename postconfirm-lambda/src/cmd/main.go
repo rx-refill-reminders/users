@@ -18,7 +18,7 @@ func run(
 		Out: os.Stdout,
 	})
 
-	h, err := handler.NewHandlerFromEnv()
+	h, err := handler.NewHandlerFromEnv(ctx)
 	if err != nil {
 		logger.Errorf(ctx, "Error initializing handler: %w", err)
 		return event, nil
