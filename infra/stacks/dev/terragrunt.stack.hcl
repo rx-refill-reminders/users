@@ -59,11 +59,5 @@ unit "users_table" {
   source = "${get_repo_root()}/infra/units/users-table"
   path   = "users-table"
 
-  values = {
-    table_name = "users"
-    hash_key   = "id"
-    attributes = [
-      { name = "id", type = "S" },
-    ]
-  }
+  values = {}
 }
