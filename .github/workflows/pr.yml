@@ -56,7 +56,7 @@ jobs:
       TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
     secrets: inherit
 
-  check-infra:
+  check-terragrunt-infras:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"terragrunt-infra"') }}
@@ -75,7 +75,7 @@ jobs:
       - check-components
       - check-github-workflows
       - check-lambdas
-      - check-infra
+      - check-terragrunt-infras
     steps:
       -
         uses: slingshot-pipelines/action-pr-ready@v0
