@@ -42,38 +42,27 @@ jobs:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"github-workflows"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-github-workflows.yml@check-github-workflows/v0
-    strategy:
-      matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).github-workflows }}
-    with:
-      COMPONENT: ${{ matrix.COMPONENT }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-github-workflows.yml@check-github-workflows/v1
     secrets: inherit
 
   check-lambdas:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"lambda"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-lambda.yml@check-lambda/v0
-    strategy:
-      matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-lambdas.yml@check-lambdas/v0
     with:
-      COMPONENT: ${{ matrix.COMPONENT }}
+      COMPONENTS: ${{ toJSON(fromJSON(needs.detect-changes.outputs.changed-components-by-type).lambda) }}
       TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
       TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
     secrets: inherit
 
-  check-infra:
+  check-terragrunt-infras:
     needs:
       - detect-changes
     if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"terragrunt-infra"') }}
-    uses: slingshot-pipelines/workflows/.github/workflows/check-terragrunt-infra.yml@check-terragrunt-infra/v0
-    strategy:
-      matrix:
-        COMPONENT: ${{ fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-terragrunt-infras.yml@check-terragrunt-infras/v0
     with:
-      COMPONENT: ${{ matrix.COMPONENT }}
+      COMPONENTS: ${{ toJSON(fromJSON(needs.detect-changes.outputs.changed-components-by-type).terragrunt-infra) }}
       TERRAFORM_VERSION: ${{ vars.TERRAFORM_VERSION }}
       TERRAGRUNT_VERSION: ${{ vars.TERRAGRUNT_VERSION }}
     secrets: inherit
@@ -86,7 +75,7 @@ jobs:
       - check-components
       - check-github-workflows
       - check-lambdas
-      - check-infra
+      - check-terragrunt-infras
     steps:
       -
         uses: slingshot-pipelines/action-pr-ready@v0
