@@ -48,6 +48,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rx-refill-reminders/lambda-go v0.0.0 h1:OvSphQHkBzv/F06O+dbTGMVuBGjsR+2G7cIZ38RyWCI=
 github.com/rx-refill-reminders/lambda-go v0.0.0/go.mod h1:Cni/vN/hSv10FRm+woYR8BhR8upsPoJIRGNbCFN7HG8=
+github.com/rx-refill-reminders/users/handler-utils v0.0.0 h1:yUFBIvATgKP3Fj3y3f1jNBJ/b1W1jwJO1et1z9xizI8=
+github.com/rx-refill-reminders/users/handler-utils v0.0.0/go.mod h1:gbVrbepJVfhsOLg+YwNw4p5Z4C9Ofr50Ze5Rx1+Q+MY=
 github.com/stretchr/objx v0.5.2 h1:xuMeJ0Sdp5ZMRXx/aWO6RZxdr3beISkG5/G/aIRr3pY=
 github.com/stretchr/objx v0.5.2/go.mod h1:FRsXN1f5AsAjCGJKqEizvkpNtU+EGNCLh3NxZ/8L+MA=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
