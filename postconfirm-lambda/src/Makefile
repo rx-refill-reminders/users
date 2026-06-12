@@ -8,8 +8,8 @@ MOCKERY_SOURCE := github.com/vektra/mockery/v3@v3.7.0
 tidy:
 	go mod tidy
 
-.PHONY: tidy
-lint:
+.PHONY: lint
+lint: tidy
 	go vet ./...
 	go fmt ./...
 
@@ -19,7 +19,7 @@ unit-test:
 
 .PHONY: build
 build:
-	../scripts/build.sh
+	$(MAKEFILE_DIR)/../scripts/build.sh
 
 .PHONY: mocks
 mocks:

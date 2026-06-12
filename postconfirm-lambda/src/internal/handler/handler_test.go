@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/config"
-	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/model"
-	usersdbmocks "github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/usersdb/mocks"
+	"github.com/rx-refill-reminders/users/handler-utils/config"
+	"github.com/rx-refill-reminders/users/handler-utils/model"
+	usersdbmocks "github.com/rx-refill-reminders/users/handler-utils/usersdb/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
