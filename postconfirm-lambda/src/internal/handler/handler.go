@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/config"
-	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/model"
-	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/usersdb"
+	"github.com/rx-refill-reminders/users/handler-utils/config"
+	"github.com/rx-refill-reminders/users/handler-utils/model"
+	"github.com/rx-refill-reminders/users/handler-utils/usersdb"
 )
 
 const triggerSourceConfirmSignUp = "PostConfirmation_ConfirmSignUp"

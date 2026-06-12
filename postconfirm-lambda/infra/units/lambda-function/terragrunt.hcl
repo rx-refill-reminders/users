@@ -9,7 +9,7 @@ terraform {
 inputs = {
   function_name  = "cognito-postconfirm-handler"
   handler        = "bootstrap"
-  executable_zip = "${get_repo_root()}/postconfirm-lambda/src/dist/api.zip"
+  executable_zip = "${get_repo_root()}/postconfirm-lambda/dist/api.zip"
 
   runtime         = "provided.al2023"
   timeout_seconds = 10

@@ -9,5 +9,5 @@ source-language: go
 
 subpaths:
   src: src
-  build: src/dist
+  build: dist
   infra: infra
