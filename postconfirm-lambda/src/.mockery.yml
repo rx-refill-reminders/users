@@ -1,0 +1,16 @@
+all: true
+dir: '{{ .InterfaceDir }}'
+filename: mocks_test.go
+force-file-write: true
+formatter: goimports
+log-level: info
+structname: 'Mock{{ .InterfaceName | firstUpper }}'
+pkgname: '{{ .SrcPackageName }}'
+recursive: true
+template: testify
+
+packages:
+
+  github.com/rx-refill-reminders/users/postconfirm-lambda/src:
+    config:
+      all: true

@@ -60,9 +60,11 @@ func (c *client) CreateUser(
 
 	// Try to write the new user to the database
 	_, err = c.dynamo.PutItem(ctx, &dynamodb.PutItemInput{
-		TableName:           &c.UsersTable,
-		Item:                item,
-		ConditionExpression: expr.Condition(),
+		TableName:                 &c.UsersTable,
+		Item:                      item,
+		ConditionExpression:       expr.Condition(),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
 	})
 
 	if err != nil {
