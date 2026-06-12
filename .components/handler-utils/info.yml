@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/component.schema.json
+
+component: handler-utils
+type: library
+
+path: handler-utils
+source-language: go
+tag-prefix: v
