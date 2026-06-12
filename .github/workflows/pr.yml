@@ -45,6 +45,15 @@ jobs:
     uses: slingshot-pipelines/workflows/.github/workflows/check-github-workflows.yml@check-github-workflows/v1
     secrets: inherit
 
+  check-libraries:
+    needs:
+      - detect-changes
+    if: ${{ contains(needs.detect-changes.outputs.changed-component-types, '"library"') }}
+    uses: slingshot-pipelines/workflows/.github/workflows/check-libraries.yml@check-libraries/v0
+    with:
+      COMPONENTS: ${{ toJSON(fromJSON(needs.detect-changes.outputs.changed-components-by-type).library) }}
+    secrets: inherit
+
   check-lambdas:
     needs:
       - detect-changes
@@ -74,6 +83,7 @@ jobs:
       - detect-changes
       - check-components
       - check-github-workflows
+      - check-libraries
       - check-lambdas
       - check-terragrunt-infras
     steps:

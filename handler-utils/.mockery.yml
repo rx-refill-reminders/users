@@ -1,0 +1,16 @@
+all: true
+dir: '{{ .InterfaceDir }}/mocks'
+filename: mocks.go
+force-file-write: true
+formatter: goimports
+log-level: info
+structname: '{{ .InterfaceName | firstUpper }}'
+pkgname: '{{ .SrcPackageName }}mocks'
+recursive: true
+template: testify
+
+packages:
+
+  github.com/rx-refill-reminders/users/handler-utils:
+    config:
+      all: true
