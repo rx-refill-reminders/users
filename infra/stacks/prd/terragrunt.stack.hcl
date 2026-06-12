@@ -61,9 +61,9 @@ unit "users_table" {
 
   values = {
     table_name = "users"
-    hash_key   = "userId"
+    hash_key   = "id"
     attributes = [
-      { name = "userId", type = "S" },
+      { name = "id", type = "S" },
     ]
   }
 }
