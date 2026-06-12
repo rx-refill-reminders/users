@@ -5,4 +5,4 @@ type: library
 
 path: handler-utils
 source-language: go
-tag-prefix: v
+tag-prefix: handler-utils/v
