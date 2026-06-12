@@ -6,6 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
+	dynamoifaceMocks "github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/dynamoiface/mocks"
 	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/model"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -14,7 +15,7 @@ import (
 type ClientTestHarness struct {
 	*client
 
-	MockDynamo *MockDynamoInterface
+	MockDynamo *dynamoifaceMocks.Client
 }
 
 func NewClientTestHarness(
@@ -23,7 +24,7 @@ func NewClientTestHarness(
 ) *ClientTestHarness {
 	h := &ClientTestHarness{}
 
-	h.MockDynamo = NewMockDynamoInterface(t)
+	h.MockDynamo = dynamoifaceMocks.NewClient(t)
 
 	h.client = &client{
 		Config: cfg,

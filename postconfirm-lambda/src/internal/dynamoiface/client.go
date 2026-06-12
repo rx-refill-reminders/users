@@ -1,4 +1,4 @@
-package usersdb
+package dynamoiface
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-type DynamoInterface interface {
+type Client interface {
 	PutItem(
 		ctx context.Context,
 		params *dynamodb.PutItemInput,

@@ -1,11 +1,11 @@
 all: true
-dir: '{{ .InterfaceDir }}'
-filename: mocks_test.go
+dir: '{{ .InterfaceDir }}/mocks'
+filename: mocks.go
 force-file-write: true
 formatter: goimports
 log-level: info
-structname: 'Mock{{ .InterfaceName | firstUpper }}'
-pkgname: '{{ .SrcPackageName }}'
+structname: '{{ .InterfaceName | firstUpper }}'
+pkgname: '{{ .SrcPackageName }}mocks'
 recursive: true
 template: testify
 

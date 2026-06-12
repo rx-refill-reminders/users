@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/dynamoiface"
 	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/model"
 )
 
@@ -30,7 +31,7 @@ type Client interface {
 type client struct {
 	Config
 
-	dynamo DynamoInterface
+	dynamo dynamoiface.Client
 }
 
 func NewClient(cfg Config) Client {
