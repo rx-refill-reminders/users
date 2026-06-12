@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	dynamoutils "github.com/lucaspopp0/go-dynamo-utils"
+)
 
 type User struct {
 	ID string `json:"id" dynamodbav:"id"`
@@ -18,6 +22,13 @@ type UserInfo struct {
 }
 
 type UserMetadata struct {
+	HasConfirmed bool `json:"hasConfirmed" dynamodbav:"hasConfirmed"`
+	HasLoggedIn  bool `json:"hasLoggedIn" dynamodbav:"hasLoggedIn"`
+
+	LastLogin time.Time `json:"lastLogin" dynamodbav:"lastLogin"`
+
 	CreatedAt time.Time `json:"createdAt" dynamodbav:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt" dynamodbav:"updatedAt"`
+
+	TTL dynamoutils.TTL `json:"ttl" dynamodbav:"ttl"`
 }
