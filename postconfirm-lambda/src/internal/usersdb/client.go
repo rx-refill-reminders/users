@@ -11,6 +11,10 @@ import (
 	"github.com/rx-refill-reminders/users/postconfirm-lambda/src/internal/model"
 )
 
+var (
+	marshalMap = attributevalue.MarshalMap
+)
+
 type Config struct {
 	AWSConfig  aws.Config
 	UsersTable string
@@ -42,7 +46,7 @@ func (c *client) CreateUser(
 	user model.User,
 ) error {
 	// Convert the user model to a DynamoDB attributevalue map
-	item, err := attributevalue.MarshalMap(user)
+	item, err := marshalMap(user)
 	if err != nil {
 		return fmt.Errorf("error marshaling user: %w", err)
 	}
