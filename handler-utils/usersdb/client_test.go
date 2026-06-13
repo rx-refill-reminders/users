@@ -3,6 +3,7 @@ package usersdb
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
@@ -39,73 +40,140 @@ func TestClient_CreateUser(t *testing.T) {
 	errInjected := fmt.Errorf("injected")
 
 	t.Run("success", func(t *testing.T) {
-		// Create a new ClientTestHarness
 		h := NewClientTestHarness(t, Config{
 			UsersTable: "users-table",
 		})
 
-		// Create an example model.User instance
 		user := model.User{
 			ID: uuid.NewString(),
 		}
 
-		// Mock the DynamoDB PutItem call
 		h.MockDynamo.EXPECT().
 			PutItem(mock.Anything, mock.Anything).
 			Return(nil, nil)
 
-		// Call CreateUser
 		err := h.CreateUser(t.Context(), user)
 
-		// Expect the call to succeed
 		require.NoError(t, err)
 	})
 
-	t.Run("err-marshal-failed", func(t *testing.T) {
-		// Create a new ClientTestHarness
+	t.Run("err-user-already-exists", func(t *testing.T) {
 		h := NewClientTestHarness(t, Config{
 			UsersTable: "users-table",
 		})
 
-		// Create an example model.User instance
 		user := model.User{
 			ID: uuid.NewString(),
 		}
 
-		// Simulate a marshalMap failure
+		h.MockDynamo.EXPECT().
+			PutItem(mock.Anything, mock.Anything).
+			Return(nil, &types.ConditionalCheckFailedException{})
+
+		err := h.CreateUser(t.Context(), user)
+
+		require.ErrorIs(t, err, ErrUserAlreadyExists)
+	})
+
+	t.Run("err-marshal-failed", func(t *testing.T) {
+		h := NewClientTestHarness(t, Config{
+			UsersTable: "users-table",
+		})
+
+		user := model.User{
+			ID: uuid.NewString(),
+		}
+
 		originalMarshalMap := marshalMap
 		t.Cleanup(func() { marshalMap = originalMarshalMap })
 		marshalMap = func(_ any) (map[string]types.AttributeValue, error) {
 			return nil, errInjected
 		}
 
-		// Call CreateUser
 		err := h.CreateUser(t.Context(), user)
 
-		// Expect the call to fail, and the result to be errInjected
 		require.ErrorIs(t, err, errInjected)
 	})
 
 	t.Run("err-put-item-failed", func(t *testing.T) {
-		// Create a new ClientTestHarness
 		h := NewClientTestHarness(t, Config{
 			UsersTable: "users-table",
 		})
 
-		// Create an example model.User instance
 		user := model.User{
 			ID: uuid.NewString(),
 		}
 
-		// Mock the DynamoDB PutItem call (errInjected)
 		h.MockDynamo.EXPECT().
 			PutItem(mock.Anything, mock.Anything).
 			Return(nil, errInjected)
 
-		// Call CreateUser
 		err := h.CreateUser(t.Context(), user)
 
-		// Expect the call to fail, and the result to be errInjected
+		require.ErrorIs(t, err, errInjected)
+	})
+}
+
+func TestClient_ConfirmUser(t *testing.T) {
+	errInjected := fmt.Errorf("injected")
+
+	t.Run("success", func(t *testing.T) {
+		h := NewClientTestHarness(t, Config{
+			UsersTable: "users-table",
+		})
+
+		h.MockDynamo.EXPECT().
+			UpdateItem(mock.Anything, mock.Anything).
+			Return(nil, nil)
+
+		err := h.ConfirmUser(t.Context(), "user-sub-123", time.Now().UTC())
+
+		require.NoError(t, err)
+	})
+
+	t.Run("err-update-item-failed", func(t *testing.T) {
+		h := NewClientTestHarness(t, Config{
+			UsersTable: "users-table",
+		})
+
+		h.MockDynamo.EXPECT().
+			UpdateItem(mock.Anything, mock.Anything).
+			Return(nil, errInjected)
+
+		err := h.ConfirmUser(t.Context(), "user-sub-123", time.Now().UTC())
+
+		require.ErrorIs(t, err, errInjected)
+	})
+}
+
+func TestClient_RecordLogin(t *testing.T) {
+	errInjected := fmt.Errorf("injected")
+
+	t.Run("success", func(t *testing.T) {
+		h := NewClientTestHarness(t, Config{
+			UsersTable: "users-table",
+		})
+
+		h.MockDynamo.EXPECT().
+			UpdateItem(mock.Anything, mock.Anything).
+			Return(nil, nil)
+
+		err := h.RecordLogin(t.Context(), "user-sub-123", time.Now().UTC())
+
+		require.NoError(t, err)
+	})
+
+	t.Run("err-update-item-failed", func(t *testing.T) {
+		h := NewClientTestHarness(t, Config{
+			UsersTable: "users-table",
+		})
+
+		h.MockDynamo.EXPECT().
+			UpdateItem(mock.Anything, mock.Anything).
+			Return(nil, errInjected)
+
+		err := h.RecordLogin(t.Context(), "user-sub-123", time.Now().UTC())
+
 		require.ErrorIs(t, err, errInjected)
 	})
 }

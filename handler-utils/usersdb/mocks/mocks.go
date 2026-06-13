@@ -6,6 +6,7 @@ package usersdbmocks
 
 import (
 	"context"
+	"time"
 
 	"github.com/rx-refill-reminders/users/handler-utils/model"
 	mock "github.com/stretchr/testify/mock"
@@ -36,6 +37,69 @@ type Client_Expecter struct {
 
 func (_m *Client) EXPECT() *Client_Expecter {
 	return &Client_Expecter{mock: &_m.Mock}
+}
+
+// ConfirmUser provides a mock function for the type Client
+func (_mock *Client) ConfirmUser(ctx context.Context, id string, confirmedAt time.Time) error {
+	ret := _mock.Called(ctx, id, confirmedAt)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ConfirmUser")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, time.Time) error); ok {
+		r0 = returnFunc(ctx, id, confirmedAt)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// Client_ConfirmUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ConfirmUser'
+type Client_ConfirmUser_Call struct {
+	*mock.Call
+}
+
+// ConfirmUser is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id string
+//   - confirmedAt time.Time
+func (_e *Client_Expecter) ConfirmUser(ctx interface{}, id interface{}, confirmedAt interface{}) *Client_ConfirmUser_Call {
+	return &Client_ConfirmUser_Call{Call: _e.mock.On("ConfirmUser", ctx, id, confirmedAt)}
+}
+
+func (_c *Client_ConfirmUser_Call) Run(run func(ctx context.Context, id string, confirmedAt time.Time)) *Client_ConfirmUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 time.Time
+		if args[2] != nil {
+			arg2 = args[2].(time.Time)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *Client_ConfirmUser_Call) Return(err error) *Client_ConfirmUser_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *Client_ConfirmUser_Call) RunAndReturn(run func(ctx context.Context, id string, confirmedAt time.Time) error) *Client_ConfirmUser_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // CreateUser provides a mock function for the type Client
@@ -91,6 +155,69 @@ func (_c *Client_CreateUser_Call) Return(err error) *Client_CreateUser_Call {
 }
 
 func (_c *Client_CreateUser_Call) RunAndReturn(run func(ctx context.Context, user model.User) error) *Client_CreateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// RecordLogin provides a mock function for the type Client
+func (_mock *Client) RecordLogin(ctx context.Context, id string, lastLogin time.Time) error {
+	ret := _mock.Called(ctx, id, lastLogin)
+
+	if len(ret) == 0 {
+		panic("no return value specified for RecordLogin")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, time.Time) error); ok {
+		r0 = returnFunc(ctx, id, lastLogin)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// Client_RecordLogin_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RecordLogin'
+type Client_RecordLogin_Call struct {
+	*mock.Call
+}
+
+// RecordLogin is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id string
+//   - lastLogin time.Time
+func (_e *Client_Expecter) RecordLogin(ctx interface{}, id interface{}, lastLogin interface{}) *Client_RecordLogin_Call {
+	return &Client_RecordLogin_Call{Call: _e.mock.On("RecordLogin", ctx, id, lastLogin)}
+}
+
+func (_c *Client_RecordLogin_Call) Run(run func(ctx context.Context, id string, lastLogin time.Time)) *Client_RecordLogin_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 context.Context
+		if args[0] != nil {
+			arg0 = args[0].(context.Context)
+		}
+		var arg1 string
+		if args[1] != nil {
+			arg1 = args[1].(string)
+		}
+		var arg2 time.Time
+		if args[2] != nil {
+			arg2 = args[2].(time.Time)
+		}
+		run(
+			arg0,
+			arg1,
+			arg2,
+		)
+	})
+	return _c
+}
+
+func (_c *Client_RecordLogin_Call) Return(err error) *Client_RecordLogin_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *Client_RecordLogin_Call) RunAndReturn(run func(ctx context.Context, id string, lastLogin time.Time) error) *Client_RecordLogin_Call {
 	_c.Call.Return(run)
 	return _c
 }
