@@ -12,4 +12,10 @@ type Client interface {
 		params *dynamodb.PutItemInput,
 		optFns ...func(*dynamodb.Options),
 	) (*dynamodb.PutItemOutput, error)
+
+	UpdateItem(
+		ctx context.Context,
+		params *dynamodb.UpdateItemInput,
+		optFns ...func(*dynamodb.Options),
+	) (*dynamodb.UpdateItemOutput, error)
 }
