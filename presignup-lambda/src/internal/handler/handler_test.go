@@ -3,10 +3,11 @@ package handler
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/rx-refill-reminders/users/handler-utils/config"
+	"github.com/rx-refill-reminders/users/handler-utils/model"
+	"github.com/rx-refill-reminders/users/handler-utils/usersdb"
 	usersdbmocks "github.com/rx-refill-reminders/users/handler-utils/usersdb/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -35,14 +36,14 @@ func NewHandlerTestHarness(
 	return h
 }
 
-func confirmSignUpEvent(
+func signUpEvent(
 	attrs map[string]string,
-) events.CognitoEventUserPoolsPostConfirmation {
-	return events.CognitoEventUserPoolsPostConfirmation{
+) events.CognitoEventUserPoolsPreSignup {
+	return events.CognitoEventUserPoolsPreSignup{
 		CognitoEventUserPoolsHeader: events.CognitoEventUserPoolsHeader{
-			TriggerSource: "PostConfirmation_ConfirmSignUp",
+			TriggerSource: "PreSignUp_SignUp",
 		},
-		Request: events.CognitoEventUserPoolsPostConfirmationRequest{
+		Request: events.CognitoEventUserPoolsPreSignupRequest{
 			UserAttributes: attrs,
 		},
 	}
@@ -54,13 +55,21 @@ func TestHandler_Handle(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := confirmSignUpEvent(map[string]string{
-			"sub": "user-sub-123",
+		event := signUpEvent(map[string]string{
+			"sub":         "user-sub-123",
+			"email":       "test@example.com",
+			"given_name":  "Jane",
+			"family_name": "Doe",
 		})
 
 		h.MockUsersDB.EXPECT().
-			ConfirmUser(mock.Anything, "user-sub-123", mock.MatchedBy(func(ts time.Time) bool {
-				return !ts.IsZero()
+			CreateUser(mock.Anything, mock.MatchedBy(func(user model.User) bool {
+				return user.ID == "user-sub-123" &&
+					user.Email == "test@example.com" &&
+					user.FirstName == "Jane" &&
+					user.LastName == "Doe" &&
+					!user.CreatedAt.IsZero() &&
+					!user.UpdatedAt.IsZero()
 			})).
 			Return(nil)
 
@@ -72,11 +81,11 @@ func TestHandler_Handle(t *testing.T) {
 	t.Run("skip-wrong-trigger-source", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := events.CognitoEventUserPoolsPostConfirmation{
+		event := events.CognitoEventUserPoolsPreSignup{
 			CognitoEventUserPoolsHeader: events.CognitoEventUserPoolsHeader{
 				TriggerSource: "SomethingElse",
 			},
-			Request: events.CognitoEventUserPoolsPostConfirmationRequest{
+			Request: events.CognitoEventUserPoolsPreSignupRequest{
 				UserAttributes: map[string]string{
 					"sub": "user-sub-123",
 				},
@@ -91,7 +100,7 @@ func TestHandler_Handle(t *testing.T) {
 	t.Run("err-missing-sub", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := confirmSignUpEvent(map[string]string{
+		event := signUpEvent(map[string]string{
 			"email": "test@example.com",
 		})
 
@@ -100,15 +109,31 @@ func TestHandler_Handle(t *testing.T) {
 		require.ErrorContains(t, err, "missing sub")
 	})
 
-	t.Run("err-confirm-user-failed", func(t *testing.T) {
+	t.Run("err-user-already-exists", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := confirmSignUpEvent(map[string]string{
+		event := signUpEvent(map[string]string{
 			"sub": "user-sub-123",
 		})
 
 		h.MockUsersDB.EXPECT().
-			ConfirmUser(mock.Anything, mock.Anything, mock.Anything).
+			CreateUser(mock.Anything, mock.Anything).
+			Return(fmt.Errorf("%w: injected", usersdb.ErrUserAlreadyExists))
+
+		err := h.Handle(t.Context(), event)
+
+		require.ErrorIs(t, err, usersdb.ErrUserAlreadyExists)
+	})
+
+	t.Run("err-create-user-failed", func(t *testing.T) {
+		h := NewHandlerTestHarness(t, config.Config{})
+
+		event := signUpEvent(map[string]string{
+			"sub": "user-sub-123",
+		})
+
+		h.MockUsersDB.EXPECT().
+			CreateUser(mock.Anything, mock.Anything).
 			Return(errInjected)
 
 		err := h.Handle(t.Context(), event)

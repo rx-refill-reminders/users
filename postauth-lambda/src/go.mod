@@ -1,4 +1,4 @@
-module github.com/rx-refill-reminders/users/postconfirm-lambda/src
+module github.com/rx-refill-reminders/users/postauth-lambda/src
 
 go 1.25.0
 

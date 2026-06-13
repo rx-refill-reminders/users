@@ -2,21 +2,23 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/rx-refill-reminders/users/handler-utils/config"
+	"github.com/rx-refill-reminders/users/handler-utils/model"
 	"github.com/rx-refill-reminders/users/handler-utils/usersdb"
 )
 
-const triggerSourcePrefix = "PostConfirmation_"
+const triggerSourcePrefix = "PreSignUp_"
 
 type Handler interface {
 	Handle(
 		ctx context.Context,
-		event events.CognitoEventUserPoolsPostConfirmation,
+		event events.CognitoEventUserPoolsPreSignup,
 	) error
 }
 
@@ -52,7 +54,7 @@ func NewHandler(
 
 func (h *handler) Handle(
 	ctx context.Context,
-	event events.CognitoEventUserPoolsPostConfirmation,
+	event events.CognitoEventUserPoolsPreSignup,
 ) error {
 	if !strings.HasPrefix(event.TriggerSource, triggerSourcePrefix) {
 		return nil
@@ -64,9 +66,29 @@ func (h *handler) Handle(
 		return fmt.Errorf("missing sub in event.request.userAttributes")
 	}
 
-	err := h.usersdb.ConfirmUser(ctx, sub, time.Now().UTC())
+	now := time.Now().UTC()
+	user := model.User{
+		ID: sub,
+
+		UserMetadata: model.UserMetadata{
+			CreatedAt: now,
+			UpdatedAt: now,
+		},
+
+		UserInfo: model.UserInfo{
+			Email:     attrs["email"],
+			FirstName: attrs["given_name"],
+			LastName:  attrs["family_name"],
+		},
+	}
+
+	err := h.usersdb.CreateUser(ctx, user)
 	if err != nil {
-		return fmt.Errorf("error confirming user: %w", err)
+		if errors.Is(err, usersdb.ErrUserAlreadyExists) {
+			return fmt.Errorf("user with sub %q already exists: %w", sub, err)
+		}
+
+		return fmt.Errorf("error creating user: %w", err)
 	}
 
 	return nil

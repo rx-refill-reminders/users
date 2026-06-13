@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/component.schema.json
+
+component: presignup-lambda
+type: lambda
+
+path: presignup-lambda
+
+source-language: go
+
+subpaths:
+  src: src
+  build: dist
+  infra: infra
