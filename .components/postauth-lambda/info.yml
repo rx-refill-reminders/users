@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/slingshot-pipelines/jsonschemas/main/schemas/component/v1/component.schema.json
+
+component: postauth-lambda
+type: lambda
+
+path: postauth-lambda
+
+source-language: go
+
+subpaths:
+  src: src
+  build: dist
+  infra: infra

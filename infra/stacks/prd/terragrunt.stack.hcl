@@ -25,7 +25,9 @@ unit "cognito_user_pool" {
     enable_google_signin = false
 
     lambda_trigger_arns = {
-      post_confirmation = "arn:aws:lambda:us-east-1:104875668206:function:cognito-postconfirm-handler"
+      pre_sign_up         = "arn:aws:lambda:us-east-1:104875668206:function:cognito-presignup-handler"
+      post_confirmation   = "arn:aws:lambda:us-east-1:104875668206:function:cognito-postconfirm-handler"
+      post_authentication = "arn:aws:lambda:us-east-1:104875668206:function:cognito-postauth-handler"
     }
 
     domain = {

@@ -35,14 +35,14 @@ func NewHandlerTestHarness(
 	return h
 }
 
-func confirmSignUpEvent(
+func authenticationEvent(
 	attrs map[string]string,
-) events.CognitoEventUserPoolsPostConfirmation {
-	return events.CognitoEventUserPoolsPostConfirmation{
+) events.CognitoEventUserPoolsPostAuthentication {
+	return events.CognitoEventUserPoolsPostAuthentication{
 		CognitoEventUserPoolsHeader: events.CognitoEventUserPoolsHeader{
-			TriggerSource: "PostConfirmation_ConfirmSignUp",
+			TriggerSource: "PostAuthentication_Authentication",
 		},
-		Request: events.CognitoEventUserPoolsPostConfirmationRequest{
+		Request: events.CognitoEventUserPoolsPostAuthenticationRequest{
 			UserAttributes: attrs,
 		},
 	}
@@ -54,12 +54,12 @@ func TestHandler_Handle(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := confirmSignUpEvent(map[string]string{
+		event := authenticationEvent(map[string]string{
 			"sub": "user-sub-123",
 		})
 
 		h.MockUsersDB.EXPECT().
-			ConfirmUser(mock.Anything, "user-sub-123", mock.MatchedBy(func(ts time.Time) bool {
+			RecordLogin(mock.Anything, "user-sub-123", mock.MatchedBy(func(ts time.Time) bool {
 				return !ts.IsZero()
 			})).
 			Return(nil)
@@ -72,11 +72,11 @@ func TestHandler_Handle(t *testing.T) {
 	t.Run("skip-wrong-trigger-source", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := events.CognitoEventUserPoolsPostConfirmation{
+		event := events.CognitoEventUserPoolsPostAuthentication{
 			CognitoEventUserPoolsHeader: events.CognitoEventUserPoolsHeader{
 				TriggerSource: "SomethingElse",
 			},
-			Request: events.CognitoEventUserPoolsPostConfirmationRequest{
+			Request: events.CognitoEventUserPoolsPostAuthenticationRequest{
 				UserAttributes: map[string]string{
 					"sub": "user-sub-123",
 				},
@@ -91,7 +91,7 @@ func TestHandler_Handle(t *testing.T) {
 	t.Run("err-missing-sub", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := confirmSignUpEvent(map[string]string{
+		event := authenticationEvent(map[string]string{
 			"email": "test@example.com",
 		})
 
@@ -100,15 +100,15 @@ func TestHandler_Handle(t *testing.T) {
 		require.ErrorContains(t, err, "missing sub")
 	})
 
-	t.Run("err-confirm-user-failed", func(t *testing.T) {
+	t.Run("err-record-login-failed", func(t *testing.T) {
 		h := NewHandlerTestHarness(t, config.Config{})
 
-		event := confirmSignUpEvent(map[string]string{
+		event := authenticationEvent(map[string]string{
 			"sub": "user-sub-123",
 		})
 
 		h.MockUsersDB.EXPECT().
-			ConfirmUser(mock.Anything, mock.Anything, mock.Anything).
+			RecordLogin(mock.Anything, mock.Anything, mock.Anything).
 			Return(errInjected)
 
 		err := h.Handle(t.Context(), event)

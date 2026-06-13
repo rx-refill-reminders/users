@@ -11,12 +11,12 @@ import (
 	"github.com/rx-refill-reminders/users/handler-utils/usersdb"
 )
 
-const triggerSourcePrefix = "PostConfirmation_"
+const triggerSourcePrefix = "PostAuthentication_"
 
 type Handler interface {
 	Handle(
 		ctx context.Context,
-		event events.CognitoEventUserPoolsPostConfirmation,
+		event events.CognitoEventUserPoolsPostAuthentication,
 	) error
 }
 
@@ -52,7 +52,7 @@ func NewHandler(
 
 func (h *handler) Handle(
 	ctx context.Context,
-	event events.CognitoEventUserPoolsPostConfirmation,
+	event events.CognitoEventUserPoolsPostAuthentication,
 ) error {
 	if !strings.HasPrefix(event.TriggerSource, triggerSourcePrefix) {
 		return nil
@@ -64,9 +64,11 @@ func (h *handler) Handle(
 		return fmt.Errorf("missing sub in event.request.userAttributes")
 	}
 
-	err := h.usersdb.ConfirmUser(ctx, sub, time.Now().UTC())
+	lastLogin := time.Now().UTC()
+
+	err := h.usersdb.RecordLogin(ctx, sub, lastLogin)
 	if err != nil {
-		return fmt.Errorf("error confirming user: %w", err)
+		return fmt.Errorf("error recording login: %w", err)
 	}
 
 	return nil
